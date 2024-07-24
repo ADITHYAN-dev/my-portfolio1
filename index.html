@@ -270,36 +270,106 @@
                         <div class="col-md-4"></div>
                         <div class="col-md-8">
                             <div class="contact-form">
-                                <div id="success"></div>
+                                <div id="result"></div>
                                 <form action="https://api.web3forms.com/submit" method="POST" name="sentMessage" id="contactForm" novalidate="novalidate">
-                                    <div class="control-group">
-                                        <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required="required" data-validation-required-message="Please enter your name" />
-                                        <p class="help-block"></p>
-                                    </div>
                                     <input type="hidden" name="access_key" value="89c541a7-357b-448d-a114-29e826803fc7">
                                     <div class="control-group">
-                                        <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" required="required" data-validation-required-message="Please enter your email" />
-                                        <p class="help-block"></p>
-                                    </div>  
-                                    <div class="control-group">
-                                        <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject" required="required" data-validation-required-message="Please enter a subject" />
+                                        <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required="required" />
                                         <p class="help-block"></p>
                                     </div>
                                     <div class="control-group">
-                                        <textarea class="form-control" id="message" name="message" placeholder="Message" required="required" data-validation-required-message="Please enter your message"></textarea>
+                                        <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" required="required" />
+                                        <p class="help-block"></p>
+                                    </div>
+                                    <div class="control-group">
+                                        <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject" required="required" />
+                                        <p class="help-block"></p>
+                                    </div>
+                                    <div class="control-group">
+                                        <textarea class="form-control" id="message" name="message" placeholder="Message" required="required"></textarea>
                                         <p class="help-block"></p>
                                     </div>
                                     <div>
                                         <button class="btn" type="submit" id="sendMessageButton">Send Message</button>
                                     </div>
-                                </form> 
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
+
+        <!-- contact ends -->
+
+        <!-- script for contacts -->
+        <script>
+            document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const form = e.target;
+    const formData = new FormData(form);
+    const result = document.getElementById('result');
+    
+    // Clear previous result messages
+    result.innerHTML = "";
+
+    // Check for form validity
+    if (!form.checkValidity()) {
+        result.innerHTML = "Please fill out all required fields correctly.";
+        return;
+    }
+
+    // Validate specific fields if needed
+    const name = form.querySelector('#name').value.trim();
+    const email = form.querySelector('#email').value.trim();
+    const message = form.querySelector('#message').value.trim();
+
+    if (!name.match(/^[A-Za-z ]+$/)) {
+        result.innerHTML = "Name should contain only letters and spaces.";
+        return;
+    }
+    
+    if (message.length < 10) {
+        result.innerHTML = "Message should be at least 10 characters long.";
+        return;
+    }
+
+    const object = Object.fromEntries(formData);
+    const json = JSON.stringify(object);
+
+    result.innerHTML = "Please wait...";
+
+    fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: json
+    })
+    .then(async (response) => {
+        let json = await response.json();
+        if (response.status === 200) {
+            result.innerHTML = "Form submitted successfully";
+        } else {
+            result.innerHTML = json.message || "Something went wrong!";
+        }
+    })
+    .catch(error => {
+        result.innerHTML = "Something went wrong!";
+        console.error(error);
+    })
+    .finally(() => {
+        form.reset();
+        setTimeout(() => {
+            result.style.display = "none";
+        }, 3000);
+    });
+});
+        </script>
+
+        <!-- script for contact ends -->
         <!-- Footer Start -->
         <div class="footer wow fadeIn" data-wow-delay="0.3s">
             <div class="container-fluid">
